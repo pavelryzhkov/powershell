@@ -4,11 +4,11 @@ param (
 )
 
 function Start-Installation {
-    $logFile = "C:\Path\To\Log\installation_log.txt"
-    $url = "https://example.com/path/to/archive.zip"
-    $destination = "C:\Path\To\Destination"
-    $desktopShortcut = "C:\Users\Public\Desktop\Shortcut.lnk"
-    New-Item -ItemType Directory $destination -ErrorAction Ignore -Force
+    $logFile = "C:\Apps\Exante\bo\installation_log.txt"
+    $url = "https://updates.rmrzone.com/boclient_skb-prod/boclient_skb-prod-win.zip"
+    $destination = "C:\Apps\Exante\bo"
+    $desktopShortcut = "C:\Users\Public\Desktop\Exante BO.lnk"
+    New-Item -ItemType Directory 'C:\Apps\Exante\bo' -ErrorAction Ignore -Force
 
     # Logging
     function Log-Message {
@@ -23,7 +23,7 @@ function Start-Installation {
 
     # Check archive availability
     try {
-        $response = Invoke-WebRequest -Uri $url -Method Head
+        $response = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing
         if ($response.StatusCode -ne 200) {
             Log-Message "Archive not available: $url"
             return
@@ -35,7 +35,7 @@ function Start-Installation {
 
     # Download archive
     try {
-        Invoke-WebRequest -Uri $url -OutFile "$destination\archive.zip"
+        Invoke-WebRequest -Uri $url -OutFile "$destination\archive.zip" -UseBasicParsing
         Log-Message "Archive downloaded to $destination\archive.zip"
     } catch {
         Log-Message "Error downloading archive: $_"
@@ -89,9 +89,9 @@ function Start-Installation {
     try {
         $WScriptShell = New-Object -ComObject WScript.Shell
         $shortcut = $WScriptShell.CreateShortcut($desktopShortcut)
-        $shortcut.TargetPath = "$destination\bin\application.exe"
-        $shortcut.WorkingDirectory = "$destination\bin"
-        $shortcut.IconLocation = "$destination\bin\application.exe"
+        $shortcut.TargetPath = "C:\Apps\Exante\bo\bin\boclient_skb.exe"
+        $shortcut.WorkingDirectory = "C:\Apps\Exante\bo\bin"
+        $shortcut.IconLocation = "C:\Apps\Exante\bo\bin\boclient_skb.exe"
         $shortcut.Save()
         Log-Message "Shortcut created: $desktopShortcut"
     } catch {
@@ -103,8 +103,8 @@ function Start-Installation {
 }
 
 function Remove-Installation {
-    $destination = "C:\Path\To\Destination"
-    $desktopShortcut = "C:\Users\Public\Desktop\Shortcut.lnk"
+    $destination = "C:\Apps\Exante\bo"
+    $desktopShortcut = "C:\Users\Public\Desktop\Exante BO.lnk"
 
     # Delete folder
     try {
@@ -129,8 +129,8 @@ function Remove-Installation {
 
 function Test-InstallationStatus {
     $filePaths = @(
-        "C:\Path\To\Destination\bin\application.exe",
-        "C:\Users\Public\Desktop\Shortcut.lnk"
+        "C:\Apps\Exante\bo\bin\boclient_skb.exe",
+        "C:\Users\Public\Desktop\Exante BO.lnk"
     )
 
     $allFilesExist = $true
